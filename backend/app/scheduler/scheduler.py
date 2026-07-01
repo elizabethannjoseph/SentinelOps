@@ -18,11 +18,11 @@ class Scheduler:
 
             await self.engine.run()
 
-            await asyncio.sleep(5)
+            await asyncio.sleep(300)
         while True:
             try:
               await self.engine.run()
             except Exception as e:
                 logger.exception("Health check failed")
-                
+
             await asyncio.sleep(...)

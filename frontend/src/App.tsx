@@ -11,7 +11,20 @@ interface HealthResult {
 
 function App() {
   const [results, setResults] = useState<HealthResult[]>([]);
+  const totalServices = results.length;
 
+  const healthyServices = results.filter(
+    (result) => result.status === "Healthy"
+  ).length;
+
+  const downServices = results.filter(
+    (result) => result.status === "Down"
+  ).length;
+
+  const lastUpdated =
+    results.length > 0
+      ? new Date().toLocaleTimeString()
+      : "--";
   const fetchHealth = () => {
     fetch("http://localhost:8000/api/health")
       .then((response) => response.json())
@@ -32,7 +45,29 @@ function App() {
       <p className="subtitle">
         DevSecOps Health Monitoring Dashboard
       </p>
+      <div className="summary-grid">
 
+    <div className="summary-card">
+      <h3>Services</h3>
+      <p>{totalServices}</p>
+    </div>
+
+    <div className="summary-card">
+      <h3>Healthy</h3>
+      <p>{healthyServices}</p>
+    </div>
+
+    <div className="summary-card">
+      <h3>Down</h3>
+      <p>{downServices}</p>
+    </div>
+
+    <div className="summary-card">
+      <h3>Last Update</h3>
+      <p>{lastUpdated}</p>
+    </div>
+
+  </div>
       <div className="grid">
         {results.map((result) => (
           <div className="card" key={result.id}>
