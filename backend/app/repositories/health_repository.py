@@ -25,13 +25,15 @@ class HealthRepository:
     def get_all(self):
 
         session = SessionLocal()
-
         try:
-            return session.query(HealthResultModel).all()
+            return (
+                session.query(HealthResultModel)
+                .order_by(HealthResultModel.checked_at.desc())
+                .all()
+            )
 
         finally:
             session.close()
-
     def get_latest(self):
         session = SessionLocal()
         try:

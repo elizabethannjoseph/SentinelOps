@@ -90,3 +90,23 @@ h1 {
   font-size: 34px;
   font-weight: bold;
 }
+.navbar {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.navbar button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+}
+
+.navbar button:hover {
+  background: #1d4ed8;
+}

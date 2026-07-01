@@ -11,6 +11,7 @@ interface HealthResult {
 
 function App() {
   const [results, setResults] = useState<HealthResult[]>([]);
+
   const totalServices = results.length;
 
   const healthyServices = results.filter(
@@ -25,6 +26,7 @@ function App() {
     results.length > 0
       ? new Date(results[0].checked_at + "Z").toLocaleString()
       : "--";
+
   const fetchHealth = () => {
     fetch("http://localhost:8000/api/health")
       .then((response) => response.json())
@@ -39,35 +41,37 @@ function App() {
 
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div className="container">
       <h1>🛡️ SentinelOps</h1>
+
       <p className="subtitle">
         DevSecOps Health Monitoring Dashboard
       </p>
+
       <div className="summary-grid">
+        <div className="summary-card">
+          <h3>Services</h3>
+          <p>{totalServices}</p>
+        </div>
 
-    <div className="summary-card">
-      <h3>Services</h3>
-      <p>{totalServices}</p>
-    </div>
+        <div className="summary-card">
+          <h3>Healthy</h3>
+          <p>{healthyServices}</p>
+        </div>
 
-    <div className="summary-card">
-      <h3>Healthy</h3>
-      <p>{healthyServices}</p>
-    </div>
+        <div className="summary-card">
+          <h3>Down</h3>
+          <p>{downServices}</p>
+        </div>
 
-    <div className="summary-card">
-      <h3>Down</h3>
-      <p>{downServices}</p>
-    </div>
+        <div className="summary-card">
+          <h3>Last Update</h3>
+          <p>{lastUpdated}</p>
+        </div>
+      </div>
 
-    <div className="summary-card">
-      <h3>Last Update</h3>
-      <p>{lastUpdated}</p>
-    </div>
-
-  </div>
       <div className="grid">
         {results.map((result) => (
           <div className="card" key={result.id}>
@@ -76,7 +80,9 @@ function App() {
             <div className="status">
               <span
                 className={
-                  result.status === "Healthy" ? "dot green" : "dot red"
+                  result.status === "Healthy"
+                    ? "dot green"
+                    : "dot red"
                 }
               ></span>
 
@@ -87,14 +93,16 @@ function App() {
               <p>
                 <strong>Response Time</strong>
               </p>
-              <p>{result.response_time_ms.toFixed(3)} ms</p>
+              <p>{result.response_time_ms.toFixed(4)} ms</p>
             </div>
 
             <div className="info">
               <p>
                 <strong>Last Checked</strong>
               </p>
-              <p>{new Date(result.checked_at + "Z").toLocaleString()}</p>
+              <p>
+                {new Date(result.checked_at + "Z").toLocaleString()}
+              </p>
             </div>
           </div>
         ))}

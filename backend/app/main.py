@@ -13,6 +13,9 @@ scheduler = Scheduler()
 from contextlib import asynccontextmanager
 from app.health.engine import HealthEngine
 engine = HealthEngine()
+from fastapi.responses import Response
+from prometheus_client import generate_latest
+from app.api.history import router as history_router
 
 @asynccontextmanager
 async def lifespan(app):
@@ -39,6 +42,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(history_router)
 app.include_router(health_router)
 @app.get("/")
 async def root():
@@ -46,3 +50,10 @@ async def root():
         "application": settings.app_name,
         "message": "SentinelOps backend is running"
     }
+@app.get("/metrics")
+async def metrics():
+
+    return Response(
+        generate_latest(),
+        media_type="text/plain",
+    )
