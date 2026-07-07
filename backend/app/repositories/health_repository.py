@@ -69,3 +69,52 @@ class HealthRepository:
 
         finally:
             session.close()
+
+    def get_incidents(self):
+
+        session = SessionLocal()
+
+        try:
+            results = (
+                session.query(HealthResultModel)
+                .order_by(HealthResultModel.checked_at.asc())
+                .all()
+            )
+
+            incidents = []
+            last_status = {}
+
+            for result in results:
+
+                previous_status = last_status.get(result.service_name)
+
+                # First record for this service
+                if previous_status is None:
+                    last_status[result.service_name] = result.status
+                    continue
+
+                # Record only state changes
+                if previous_status != result.status:
+
+                    incidents.append(
+                        {
+                            "id": result.id,
+                            "service_name": result.service_name,
+                            "event": (
+                                "Recovered"
+                                if result.status == "Healthy"
+                                else "Down"
+                            ),
+                            "status": result.status,
+                            "checked_at": result.checked_at,
+                            "response_time_ms": result.response_time_ms,
+                            "error_message": result.error_message,
+                        }
+                    )
+
+                last_status[result.service_name] = result.status
+
+            return list(reversed(incidents))
+
+        finally:
+            session.close()

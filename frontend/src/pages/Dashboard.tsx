@@ -7,10 +7,13 @@ interface HealthResult {
   status: string;
   response_time_ms: number;
   checked_at: string;
+  error_message: string | null;
+  consecutive_failures: number;
 }
 
 function Dashboard() {
   const [results, setResults] = useState<HealthResult[]>([]);
+  const [expandedService, setExpandedService] = useState<number | null>(null);
 
   const totalServices = results.length;
 
@@ -44,7 +47,7 @@ function Dashboard() {
 
   return (
     <div className="container">
-      <h1>🛡️ SentinelOps</h1>
+      <h1>🛡️ SentinelOps TEST!!</h1>
 
       <p className="subtitle">
         DevSecOps Health Monitoring Dashboard
@@ -74,7 +77,13 @@ function Dashboard() {
 
       <div className="grid">
         {results.map((result) => (
-          <div className="card" key={result.id}>
+          <div className="card" 
+               key={result.id}
+               onClick={() =>
+                  setExpandedService(
+                    expandedService === result.id ? null : result.id
+                  )
+                }>
             <h2>{result.service_name}</h2>
 
             <div className="status">
@@ -104,6 +113,23 @@ function Dashboard() {
                 {new Date(result.checked_at + "Z").toLocaleString()}
               </p>
             </div>
+            {expandedService === result.id && (
+            <div className="details">
+            <div className="info">
+              <p>
+                <strong>Consecutive Failures</strong>
+              </p>
+              <p>{result.consecutive_failures}</p>
+            </div>
+
+            <div className="info">
+              <p>
+                <strong>Error</strong>
+              </p>
+              <p>{result.error_message ?? "None"}</p>
+            </div>
+        </div>
+          )}
           </div>
         ))}
       </div>
