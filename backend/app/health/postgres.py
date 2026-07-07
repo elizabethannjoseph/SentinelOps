@@ -12,7 +12,7 @@ class PostgreSQLHealthCheck(HealthCheck):
     async def check(self) -> HealthResult:
 
         start = time.perf_counter()
-
+        error = None
         try:
             conn = psycopg.connect(
             host=settings.postgres_host,
@@ -28,7 +28,8 @@ class PostgreSQLHealthCheck(HealthCheck):
 
             status = "Healthy"
 
-        except Exception:
+        except Exception as e:
+            error = str(e)
 
             elapsed = (time.perf_counter() - start) * 1000
 
@@ -38,4 +39,5 @@ class PostgreSQLHealthCheck(HealthCheck):
             service_name="PostgreSQL",
             status=status,
             response_time_ms=elapsed,
+            error_message=error,
         )

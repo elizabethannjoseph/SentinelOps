@@ -11,7 +11,7 @@ class GLPIHealthCheck(HealthCheck):
     async def check(self) -> HealthResult:
 
         start = time.perf_counter()
-
+        error = None
         try:
             async with httpx.AsyncClient(timeout=5.0) as client:
                 response = await client.get("http://glpi")
@@ -20,7 +20,8 @@ class GLPIHealthCheck(HealthCheck):
 
             status = "Healthy" if response.status_code == 200 else "Down"
 
-        except Exception:
+        except Exception as e:
+            error = str(e)
 
             elapsed = (time.perf_counter() - start) * 1000
             status = "Down"
@@ -29,4 +30,5 @@ class GLPIHealthCheck(HealthCheck):
             service_name="GLPI",
             status=status,
             response_time_ms=elapsed,
+            error_message=error,
         )

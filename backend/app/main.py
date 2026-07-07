@@ -1,5 +1,4 @@
 import asyncio
-
 from app.db.database import init_db
 import app.db.models
 from app.core.logging import setup_logging

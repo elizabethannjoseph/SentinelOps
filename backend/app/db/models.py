@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from typing import Optional
 from sqlalchemy import DateTime, Float, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -16,4 +16,13 @@ class HealthResult(Base):
     checked_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow,
+    )
+    error_message: Mapped[Optional[str]] = mapped_column(
+    String,
+    nullable=True,
+    )
+
+    consecutive_failures: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
     )

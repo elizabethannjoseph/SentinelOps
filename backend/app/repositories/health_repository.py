@@ -1,3 +1,4 @@
+from unittest import result
 from app.db.database import SessionLocal
 from app.db.models import HealthResult as HealthResultModel
 from app.health.result import HealthResult
@@ -8,12 +9,29 @@ class HealthRepository:
     def save(self, result: HealthResult):
 
         session = SessionLocal()
-
         try:
+            previous = (
+                session.query(HealthResultModel)
+                .filter(
+                    HealthResultModel.service_name == result.service_name
+                    )
+                    .order_by(HealthResultModel.checked_at.desc())
+                    .first()
+            )
+
+            if result.status == "Healthy":
+                consecutive_failures = 0
+            else:
+                if previous and previous.status == "Down":
+                    consecutive_failures = previous.consecutive_failures + 1
+                else:
+                    consecutive_failures = 1
             db_result = HealthResultModel(
                 service_name=result.service_name,
                 status=result.status,
                 response_time_ms=result.response_time_ms,
+                error_message=result.error_message,
+                consecutive_failures=consecutive_failures,
             )
 
             session.add(db_result)

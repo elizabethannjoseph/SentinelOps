@@ -19,6 +19,8 @@ def get_health():
             "status": result.status,
             "response_time_ms": result.response_time_ms,
             "checked_at": result.checked_at,
+            "error_message": result.error_message,
+            "consecutive_failures": result.consecutive_failures,
         }
         for result in results
     ]
