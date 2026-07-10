@@ -3,10 +3,8 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from app.core.config import settings
 
-
 class Base(DeclarativeBase):
     pass
-
 
 engine = create_engine(
     f"sqlite:///{settings.sqlite_db_path}",

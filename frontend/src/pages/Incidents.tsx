@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "../App.css";
 
 interface Incident {
   id: number;
@@ -10,54 +11,71 @@ interface Incident {
   error_message: string | null;
 }
 
-function Incidents() {
+export default function Incidents() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
 
-  useEffect(() => {
+  const fetchIncidents = () => {
     fetch("http://localhost:8000/api/incidents")
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((data) => setIncidents(data))
       .catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchIncidents();
+
+    const interval = setInterval(fetchIncidents, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="container">
-      <h1>🚨 Incident Timeline</h1>
+      <h1>Incident Timeline</h1>
 
-      <table className="history-table">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Service</th>
-            <th>Event</th>
-            <th>Error</th>
-          </tr>
-        </thead>
+      <p className="subtitle">
+        Service outages and recovery events detected by SentinelOps.
+      </p>
 
-        <tbody>
-          {incidents.map((incident) => (
-            <tr key={incident.id}>
-              <td>
+      <div className="timeline">
+        {incidents.map((incident) => (
+          <div className="timeline-card" key={incident.id}>
+            <div
+              className={
+                incident.event === "Down"
+                  ? "timeline-icon down"
+                  : "timeline-icon healthy"
+              }
+            >
+              {incident.event === "Down" ? "🔴" : "🟢"}
+            </div>
+
+            <div className="timeline-content">
+              <h3>
+                {incident.service_name}{" "}
+                {incident.event === "Down"
+                  ? "went Down"
+                  : "Recovered"}
+              </h3>
+
+              <p className="timeline-time">
                 {new Date(
                   incident.checked_at + "Z"
                 ).toLocaleString()}
-              </td>
+              </p>
 
-              <td>{incident.service_name}</td>
+              <p>
+                Response Time:{" "}
+                {incident.response_time_ms.toFixed(2)} ms
+              </p>
 
-              <td>
-                {incident.event === "Down"
-                  ? "🔴 Down"
-                  : "🟢 Recovered"}
-              </td>
-
-              <td>{incident.error_message ?? "-"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              <p>
+                Error: {incident.error_message ?? "None"}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
-
-export default Incidents;

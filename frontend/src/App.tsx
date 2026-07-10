@@ -1,24 +1,36 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+
+import Sidebar from "./components/Sidebar";
+import TopBar from "./components/TopBar";
+
 import Dashboard from "./pages/Dashboard";
 import History from "./pages/History";
 import Incidents from "./pages/Incidents";
+
 import "./App.css";
-function App(){
+
+function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <>
-      <nav className="navbar">
-        <Link to="/">Dashboard</Link>
-        <Link to="/history">History</Link>
-        <Link to="/incidents">Incidents</Link>
-      </nav>
+    <div className="app-layout">
+      <Sidebar isOpen={sidebarOpen} />
 
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/incidents" element={<Incidents />} />
-      </Routes>
-    </>
+      <div className="content-area">
+        <TopBar
+          toggle={() => setSidebarOpen(!sidebarOpen)}
+        />
+
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/incidents" element={<Incidents />} />
+          </Routes>
+        </main>
+      </div>
+    </div>
   );
 }
 

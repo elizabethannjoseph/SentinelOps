@@ -1,35 +1,10 @@
-import time
+from app.health.http import HTTPHealthCheck
 
-import httpx
+class GrafanaHealthCheck(HTTPHealthCheck):
 
-from app.health.base import HealthCheck
-from app.health.result import HealthResult
-
-
-class GrafanaHealthCheck(HealthCheck):
-
-    async def check(self) -> HealthResult:
-
-        start = time.perf_counter()
-        error = None
-        try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                response = await client.get("http://grafana:3000/api/health")
-
-            elapsed = (time.perf_counter() - start) * 1000
-
-            status = "Healthy" if response.status_code == 200 else "Down"
-
-        except Exception as e:
-            error = str(e)
-
-            elapsed = (time.perf_counter() - start) * 1000
-
-            status = "Down"
-
-        return HealthResult(
+    def __init__(self):
+        super().__init__(
             service_name="Grafana",
-            status=status,
-            response_time_ms=elapsed,
-            error_message=error,
+            category="Monitoring",
+            url="http://grafana:3000/api/health"
         )

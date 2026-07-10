@@ -28,6 +28,7 @@ class HealthRepository:
                     consecutive_failures = 1
             db_result = HealthResultModel(
                 service_name=result.service_name,
+                category=result.category,
                 status=result.status,
                 response_time_ms=result.response_time_ms,
                 error_message=result.error_message,

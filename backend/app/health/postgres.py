@@ -37,6 +37,7 @@ class PostgreSQLHealthCheck(HealthCheck):
 
         return HealthResult(
             service_name="PostgreSQL",
+            category="Database",
             status=status,
             response_time_ms=elapsed,
             error_message=error,

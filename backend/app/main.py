@@ -16,6 +16,8 @@ from fastapi.responses import Response
 from prometheus_client import generate_latest
 from app.api.history import router as history_router
 from app.api.incidents import router as incidents_router
+from app.api import docker
+
 
 @asynccontextmanager
 async def lifespan(app):
@@ -45,6 +47,7 @@ app.add_middleware(
 app.include_router(history_router)
 app.include_router(health_router)
 app.include_router(incidents_router)
+app.include_router(docker.router)
 @app.get("/")
 async def root():
     return {

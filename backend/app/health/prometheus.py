@@ -28,6 +28,7 @@ class PrometheusHealthCheck(HealthCheck):
 
         return HealthResult(
             service_name="Prometheus",
+            category="Metrics",
             status=status,
             response_time_ms=elapsed,
             error_message=error,

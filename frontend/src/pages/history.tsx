@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "../App.css";
 
 interface HealthResult {
   id: number;
@@ -9,48 +10,59 @@ interface HealthResult {
 }
 
 export default function History() {
-
   const [history, setHistory] = useState<HealthResult[]>([]);
 
-  useEffect(() => {
+  const fetchHistory = () => {
     fetch("http://localhost:8000/api/history")
-        .then((res) => res.json())
-        .then((data) => {
-        console.log("History data:", data);
-        setHistory(data);
-        })
-    .catch((err) => console.error(err));
-    }, []);
-console.log(history);
-console.log(history.length);
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>Service</th>
-          <th>Status</th>
-          <th>Response Time</th>
-          <th>Checked At</th>
-        </tr>
-      </thead>
+      .then((res) => res.json())
+      .then((data) => setHistory(data))
+      .catch(console.error);
+  };
 
-      <tbody>
-        {history.map((item) => (
-          <tr key={item.id}>
-            <td>{item.service_name}</td>
-            <td
-                style={{
-                    color: item.status === "Healthy" ? "green" : "red",
-                fontWeight: "bold",
-            }}
->
-  {item.status}
-</td>
-            <td>{item.response_time_ms.toFixed(4)} ms</td>
-            <td>{new Date(item.checked_at + "Z").toLocaleString()}</td>
+  useEffect(() => {
+    fetchHistory();
+    const interval = setInterval(fetchHistory, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="container">
+      <h1>History</h1>
+      <p className="subtitle">
+        View historical health checks for all monitored services.
+      </p>
+      <table className="history-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Response Time</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {history.map((item) => (
+            <tr key={item.id}>
+              <td>
+                {new Date(item.checked_at + "Z").toLocaleString()}
+              </td>
+              <td>{item.service_name}</td>
+              <td>
+                <span
+                  className={
+                    item.status === "Healthy"
+                      ? "status-badge healthy"
+                      : "status-badge down"
+                  }
+                >
+                  {item.status}
+                </span>
+              </td>
+              <td>{item.response_time_ms.toFixed(2)} ms</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

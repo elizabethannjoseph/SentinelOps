@@ -11,6 +11,7 @@ class HealthResult(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     service_name: Mapped[str] = mapped_column(String(100))
+    category: Mapped[str] = mapped_column(String(50))
     status: Mapped[str] = mapped_column(String(20))
     response_time_ms: Mapped[float] = mapped_column(Float)
     checked_at: Mapped[datetime] = mapped_column(
