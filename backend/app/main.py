@@ -17,6 +17,7 @@ from prometheus_client import generate_latest
 from app.api.history import router as history_router
 from app.api.incidents import router as incidents_router
 from app.api import docker
+from app.api.scheduler import router as scheduler_router
 
 
 @asynccontextmanager
@@ -48,6 +49,7 @@ app.include_router(history_router)
 app.include_router(health_router)
 app.include_router(incidents_router)
 app.include_router(docker.router)
+app.include_router(scheduler_router)
 @app.get("/")
 async def root():
     return {

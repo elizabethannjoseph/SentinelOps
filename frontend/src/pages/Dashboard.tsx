@@ -29,8 +29,8 @@ function Dashboard() {
 
   const REFRESH_INTERVAL = 300; // 5 minutes (300 seconds)
 
-  const [refreshCountdown, setRefreshCountdown] = useState(REFRESH_INTERVAL);
-
+  const [refreshCountdown, setRefreshCountdown] = useState<number | null>(null);
+  const [nextCheck, setNextCheck] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const totalServices = results.length;
@@ -63,29 +63,58 @@ function Dashboard() {
   };
 
   useEffect(() => {
+  const fetchSchedulerStatus = () => {
+    fetch("http://localhost:8000/api/scheduler/status")
+      .then((res) => res.json())
+      .then((data) => {
+        setNextCheck(data.next_check);
+
+        const diff = Math.max(
+          0,
+          Math.floor(
+            (new Date(data.next_check).getTime() - Date.now()) / 1000
+          )
+        );
+
+        setRefreshCountdown(diff);
+      })
+      .catch(console.error);
+  };
+
+  fetchHealth();
+  fetchSchedulerStatus();
+
+  const refreshInterval = setInterval(() => {
     fetchHealth();
+    fetchSchedulerStatus();
+  }, REFRESH_INTERVAL * 1000);
 
-    const refreshInterval = setInterval(() => {
-      fetchHealth();
-      setRefreshCountdown(REFRESH_INTERVAL);
-    }, REFRESH_INTERVAL * 1000);
+  return () => clearInterval(refreshInterval);
+}, []);
 
-    const countdownInterval = setInterval(() => {
-      setRefreshCountdown((prev) => Math.max(prev - 1, 0));
-    }, 1000);
-    return () => {
-      clearInterval(refreshInterval);
-      clearInterval(countdownInterval);
-    };
-  }, []);
+useEffect(() => {
+  if (!nextCheck) return;
 
-  const minutes = Math.floor(refreshCountdown / 60);
+  const countdownInterval = setInterval(() => {
+    const diff = Math.max(
+      0,
+      Math.floor(
+        (new Date(nextCheck).getTime() - Date.now()) / 1000
+      )
+    );
 
-  const seconds = refreshCountdown % 60;
+    setRefreshCountdown(diff);
+  }, 1000);
 
-  const countdownText = `${minutes}m ${seconds
-    .toString()
-    .padStart(2, "0")}s`; 
+  return () => clearInterval(countdownInterval);
+}, [nextCheck]);
+
+  const countdownText =
+    refreshCountdown === null
+      ? "Loading..."
+      : `${Math.floor(refreshCountdown / 60)}m ${(refreshCountdown % 60)
+          .toString()
+          .padStart(2, "0")}s`;
 
   const filteredResults = results.filter((result) =>
     result.service_name.toLowerCase().includes(searchTerm.toLowerCase())
