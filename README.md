@@ -34,7 +34,7 @@ Built using **FastAPI**, **React**, **Docker**, and **SQLite**, SentinelOps demo
 
 ## Architecture & Workflow
 
-![Architecture](docs/architecture.png)
+![Architecture](docs/diagrams/architecture.png)
 
 SentinelOps follows a layered monitoring architecture:
 
