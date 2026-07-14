@@ -51,15 +51,15 @@ SentinelOps follows a layered monitoring architecture:
 
 | Dashboard | Service Details |
 |-----------|-----------------|
-| ![](docs/diagram/dashboard.png) | ![](docs//diagram/servicecard.png) |
+| ![](docs/diagrams/dashboard.png) | ![](docs//diagrams/servicecard.png) |
 
 | History | Incidents |
 |---------|-----------|
-| ![](docs/diagram/history.png) | ![](docs/diagram/incidents.png) |
+| ![](docs/diagrams/history.png) | ![](docs/diagrams/incidents.png) |
 
 ### Response Time Analytics
 
-![](docs/diagram/response-time.png)
+![](docs/diagrams/response-time.png)
 
 ---
 
