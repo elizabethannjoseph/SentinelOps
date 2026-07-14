@@ -1,4 +1,5 @@
 # SentinelOps
+> A containerized infrastructure monitoring platform built with FastAPI, React, Docker, and SQLite that provides scheduled health monitoring, incident tracking, historical analytics, availability reporting, and Docker container metrics through a modern web dashboard.
 
 ### Containerized Infrastructure Monitoring Platform
 
