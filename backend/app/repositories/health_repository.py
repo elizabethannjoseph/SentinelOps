@@ -119,3 +119,44 @@ class HealthRepository:
 
         finally:
             session.close()
+
+    def get_availability(self):
+        session = SessionLocal()
+
+        try:
+            results = session.query(HealthResultModel).all()
+
+            services = {}
+
+            for result in results:
+                if result.service_name not in services:
+                    services[result.service_name] = {
+                        "healthy": 0,
+                        "total": 0,
+                    }
+
+                services[result.service_name]["total"] += 1
+
+                if result.status == "Healthy":
+                    services[result.service_name]["healthy"] += 1
+
+            availability = []
+
+            for service, stats in services.items():
+                percentage = (
+                    stats["healthy"] / stats["total"] * 100
+                    if stats["total"] > 0
+                    else 0
+                )
+
+                availability.append(
+                    {
+                        "service_name": service,
+                        "availability": round(percentage, 2),
+                    }
+                )
+
+            return availability
+
+        finally:
+            session.close()

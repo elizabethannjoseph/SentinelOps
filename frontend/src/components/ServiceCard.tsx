@@ -10,6 +10,7 @@ import {
   LineChart,
   Server,
   Tag,
+  CircleCheckBig,
 } from "lucide-react";
 import "./ServiceCard.css";
 
@@ -22,6 +23,7 @@ interface Props {
   errorMessage: string | null;
   consecutiveFailures: number;
   expanded: boolean;
+  availability: number;
   onToggle: () => void;
 }
 
@@ -59,6 +61,7 @@ export default function ServiceCard({
   errorMessage,
   consecutiveFailures,
   expanded,
+  availability,
   onToggle,
 }: Props) {
   const [containerInfo, setContainerInfo] = useState<any>(null);
@@ -101,6 +104,13 @@ export default function ServiceCard({
         </div>
       </div>
 
+      <div className="metric">
+        <CircleCheckBig size={18} />
+        <div>
+          <small>Availability</small>
+          <p>{availability.toFixed(2)}%</p>
+        </div>
+      </div>
       <div className="metric">
         <Tag size={18} />
         <div>
