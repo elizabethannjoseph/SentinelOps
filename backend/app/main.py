@@ -51,6 +51,7 @@ app.include_router(incidents_router)
 app.include_router(docker.router)
 app.include_router(scheduler_router)
 app.include_router(availability_router)
+
 @app.get("/")
 async def root():
     return {

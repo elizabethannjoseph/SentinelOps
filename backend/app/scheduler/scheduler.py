@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from datetime import datetime, timedelta, timezone
 
 from app.health.engine import HealthEngine
@@ -19,12 +20,18 @@ class Scheduler:
         global last_check, next_check
 
         while True:
-
             logger.info("Running health checks...")
 
+            start = time.monotonic()
+
             last_check = datetime.now(timezone.utc)
-            next_check = last_check + timedelta(minutes=5)
 
             await self.engine.run()
 
-            await asyncio.sleep(300)
+            next_check = datetime.now(timezone.utc) + timedelta(minutes=5)
+
+            elapsed = time.monotonic() - start
+
+            sleep_time = max(0, 300 - elapsed)
+
+            await asyncio.sleep(sleep_time)

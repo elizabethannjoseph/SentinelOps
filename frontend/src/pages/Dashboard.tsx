@@ -64,81 +64,8 @@ function Dashboard() {
       .then((data) => setResults(data))
       .catch((err) => console.error(err));
   };
-
-  useEffect(() => {
-  const fetchSchedulerStatus = () => {
-    fetch("http://localhost:8000/api/scheduler/status")
-    .then((res) => res.json())
-    .then((data) => {
-      setNextCheck(data.next_check);
-
-      const diff = Math.max(
-        0,
-        Math.floor(
-          (new Date(data.next_check).getTime() - Date.now()) / 1000
-        )
-      );
-
-      setRefreshCountdown(diff);
-    })
-    .catch(console.error);
-  };
-
-  fetchHealth();
-  fetchAvailability();
-  fetchSchedulerStatus();
-
-  const refreshInterval = setInterval(() => {
-    fetchHealth();
-    fetchAvailability();
-    fetchSchedulerStatus();
-  }, REFRESH_INTERVAL * 1000);
-
-  return () => clearInterval(refreshInterval);
-}, []);
-
-  useEffect(() => {
-    if (!nextCheck) return;
-
-    const countdownInterval = setInterval(() => {
-    const diff = Math.max(
-      0,
-      Math.floor(
-        (new Date(nextCheck).getTime() - Date.now()) / 1000
-      )
-    );
-
-    if (diff <= 0) {
-      fetchHealth();
-
-      fetch("http://localhost:8000/api/scheduler/status")
-        .then((res) => res.json())
-        .then((data) => {
-          setNextCheck(data.next_check);
-        });
-
-      return;
-    }
-
-setRefreshCountdown(diff);
-  }, 1000);
-
-  return () => clearInterval(countdownInterval);
-}, [nextCheck]);
-
-    const countdownText =
-      refreshCountdown === null
-        ? "Loading..."
-        : `${Math.floor(refreshCountdown / 60)}m ${(refreshCountdown % 60)
-            .toString()
-            .padStart(2, "0")}s`;
-
-    const filteredResults = results.filter((result) =>
-      result.service_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const fetchAvailability = () => {
-      fetch("http://localhost:8000/api/availability")
+  const fetchAvailability = () => {
+    fetch("http://localhost:8000/api/availability")
       .then((res) => res.json())
       .then((data) => {
         const map: Record<string, number> = {};
@@ -149,9 +76,71 @@ setRefreshCountdown(diff);
 
         setAvailability(map);
       })
-      .catch(console.error);
+    .catch(console.error);
   };
 
+  const fetchSchedulerStatus = () => {
+    fetch("http://localhost:8000/api/scheduler/status")
+      .then((res) => res.json())
+      .then((data) => {
+        setNextCheck(data.next_check);
+
+        const diff = Math.max(
+          0,
+          Math.floor(
+            (new Date(data.next_check).getTime() - Date.now()) / 1000
+          )
+        );
+        setRefreshCountdown(diff);
+      })
+    .catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchHealth();
+    fetchAvailability();
+    fetchSchedulerStatus();
+
+    const refreshInterval = setInterval(() => {
+      fetchHealth();
+      fetchAvailability();
+      fetchSchedulerStatus();
+    }, REFRESH_INTERVAL * 1000);
+
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  useEffect(() => {
+    if (!nextCheck) return;
+
+    const countdownInterval = setInterval(() => {
+      const diff = Math.max(
+        0,
+        Math.floor(
+          (new Date(nextCheck).getTime() - Date.now()) / 1000
+        )
+      );
+      setRefreshCountdown(diff);
+      if (diff === 0) {
+        setRefreshCountdown(null);
+        fetchHealth();
+        fetchAvailability();
+        fetchSchedulerStatus();
+      }
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [nextCheck]);
+    const countdownText =
+      refreshCountdown === null
+        ? "Refreshing..."
+        : `${Math.floor(refreshCountdown / 60)}m ${(refreshCountdown % 60)
+            .toString()
+            .padStart(2, "0")}s`;
+
+    const filteredResults = results.filter((result) =>
+      result.service_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   return (
     <div className="container">
      <div className="dashboard-header">

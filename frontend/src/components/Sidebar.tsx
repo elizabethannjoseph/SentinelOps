@@ -4,16 +4,12 @@ import {
   History,
   TriangleAlert,
 } from "lucide-react";
-
 import "./Sidebar.css";
-
 interface SidebarProps {
   isOpen: boolean;
 }
-
 function Sidebar({ isOpen }: SidebarProps) {
   const location = useLocation();
-
   return (
     <aside className={`sidebar ${!isOpen ? "collapsed" : ""}`}>
       <nav>
